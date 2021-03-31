@@ -1641,14 +1641,15 @@ sub script_run_interactive {
         push(@words, $k->{prompt});
     }
 
-    push(@words, $endmark);
+    push(@words, qr/$endmark(\d+)/);
 
     {
         do {
             $output = wait_serial(\@words, $timeout) || die "No message matched!";
+            diag "---------output is $output";
 
             last if ($output =~ /($endmark)0$/m);    # return value is 0
-            die  if ($output =~ /$endmark/m);        # other return values
+            die  if ($output =~ /($endmark\d+)$/m);        # other return values
 
             for my $i (@$scan) {
                 next if ($output !~ $i->{prompt});

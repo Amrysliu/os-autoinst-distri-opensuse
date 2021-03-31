@@ -30,6 +30,8 @@ sub run {
     # There is some issue with script_run_interactive script,
     # it fails to match the serial console output sometimes,
     # so switch to root-console here
+    my $self = shift;
+    # $self->select_serial_terminal;
     select_console 'root-console';
 
     # Install the pam-mount package, since this service package is not installed by default
@@ -50,15 +52,15 @@ sub run {
         "cryptsetup luksFormat --type luks2 $loopdev",
         [
             {
-                prompt => qr/Are you sure.*/m,
+                prompt => "Are you sure.*",
                 string => "YES\n",
             },
             {
-                prompt => qr/Enter passphrase.*/m,
+                prompt => "Enter passphrase.*",
                 string => "$key\n",
             },
             {
-                prompt => qr/Verify passphrase.*/m,
+                prompt => "Verify passphrase.*",
                 string => "$key\n",
             },
         ],
