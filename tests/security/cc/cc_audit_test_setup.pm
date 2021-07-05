@@ -11,11 +11,12 @@
 # Maintainer: llzhao <llzhao@suse.com>
 # Tags: poo#93441
 
-use base 'audit_test';
+use base 'consoletest';
 use strict;
 use warnings;
 use testapi;
 use utils;
+use audit_test;
 use registration 'add_suseconnect_product';
 
 sub run {

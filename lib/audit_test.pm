@@ -12,13 +12,16 @@
 
 package audit_test;
 
+use base Exporter;
+use Exporter;
+
 use strict;
 use warnings;
 use testapi;
 use utils;
 use Mojo::File 'path';
+use Data::Dumper;
 
-use base 'consoletest';
 
 our @EXPORT = qw(
   $testdir
@@ -29,6 +32,8 @@ our @EXPORT = qw(
   run_testcase
   parse_testcase_log
   compare_run_log
+  lxj_compare_run_log
+  lxj_parse_lines
 );
 
 our $testdir      = '/tmp/';
@@ -38,6 +43,7 @@ our $mode         = get_var('MODE', 64);
 
 # $current_file: current output file name; $baseline_file: baseline file name
 our $current_file  = 'run.log';
+#our $rollup_file   = 'rollup.log';
 our $baseline_file = 'baseline_run.log';
 
 # Get test suite name, e.g., 'audit-test-sle15-master'
@@ -53,15 +59,16 @@ sub get_testsuite_name {
 # Run the specific test case
 # input: $testcase - test case name (the actual test case name in 'audit-test' test suite, etc)
 sub run_testcase {
-    my ($self, $testcase) = @_;
+    my ($self, $testcase, %args) = @_;
 
     # Run test case
     assert_script_run("cd ${testdir}${testfile_tar}/audit-test/${testcase}/");
-    assert_script_run('./run.bash');
+    assert_script_run('./run.bash', %args);
 
     # Upload logs
-    upload_logs("$current_file");
+    # upload_logs("$current_file");
     upload_logs("$baseline_file");
+    #  upload_logs("$rollup_file");
 }
 
 # Parse all test cases in *.log (run.log, etc)
@@ -128,6 +135,49 @@ sub compare_run_log {
         record_info('Same', 'Current testing results are the same with baseline');
     }
     return $result;
+}
+
+sub lxj_parse_lines {
+    my ($lines) = @_;
+    my $results = {};
+    foreach my $line (@$lines) {
+        if ($line =~ /(\[\d+\])\s+(\S+)\s+(PASS|FAIL|ERROR)/) {
+            $results->{$2} = $3;
+        }
+    }
+    return $results;
+}
+
+sub lxj_compare_run_log {
+    my ($current_results, $baseline) = @_;
+    my $baseline_results = {};
+    my $baseline_file = "ulogs/$baseline";
+    if (! -e $baseline_file) {
+        diag "The file $baseline_file does not exist";
+    }
+    else {
+        my @lines = split(/\n/, path("$baseline_file")->slurp);
+        $baseline_results = lxj_parse_lines(\@lines);
+    }
+    my $results = {};
+    my $flag = 'ok';
+    foreach my $c_key (keys %$current_results) {
+        my $current_result = $current_results->{$c_key};
+        unless ($baseline_results->{$c_key}) {
+            my $test_result = $current_result eq 'PASS' ? 'ok' : 'fail';
+            record_info($c_key, 'There is no baseline to compare, show its result', result => $test_result); 
+            $flag = $test_result if ($flag eq 'ok' && $test_result eq 'fail');
+            next;
+        }
+        if ($current_result eq $baseline_results->{$c_key}) {
+            record_info($c_key, 'Test result is as the same as the baseline', result => 'ok');
+        }
+        else {
+            record_info($c_key, "Current test result is $current_result, the baseline result is $baseline_results->{$c_key}", result => 'fail');
+            $flag = $test_result if ($flag eq 'ok');
+        }
+    }
+    return $flag;
 }
 
 1;
