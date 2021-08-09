@@ -31,6 +31,8 @@ our @EXPORT = qw(
   run_testcase
   compare_run_log
   parse_lines
+  prepare_for_test
+  upload_audit_test_logs
 );
 
 our $testdir      = '/tmp/';
@@ -48,19 +50,30 @@ our $baseline_file = 'baseline_run.log';
 sub run_testcase {
     my ($testcase, %args) = @_;
 
+    # configurate the test enviornment for test
+    prepare_for_test($testcase, %args) unless ($args{skip_prepare});
+
+    assert_script_run('./run.bash', timeout => $args{timeout});
+
+    upload_audit_test_logs();
+}
+
+sub upload_audit_test_logs {
+    upload_logs("$current_file");
+    upload_logs("$baseline_file");
+}
+
+sub prepare_for_test {
+    my ($testcase, %args) = @_;
+
     # Run test case
     assert_script_run("cd ${testdir}${testfile_tar}/audit-test/");
-    assert_script_run('make') if ($args{make});
+    assert_script_run('make')           if ($args{make});
+    assert_script_run('make netconfig') if ($args{make_netconfig});
     assert_script_run("cd ${testcase}/");
 
     # Export MODE
     assert_script_run("export MODE=$audit_test::mode");
-
-    assert_script_run('./run.bash', timeout => $args{timeout});
-
-    # Upload logs
-    upload_logs("$current_file");
-    upload_logs("$baseline_file");
 }
 
 sub parse_lines {
