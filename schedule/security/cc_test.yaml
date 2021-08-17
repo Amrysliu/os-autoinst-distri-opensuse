@@ -1,0 +1,6 @@
+name: cc_filter
+description:    >
+    This is for audit_test filter
+schedule:
+    - boot/boot_to_desktop
+    - security/cc/test_demo
