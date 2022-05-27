@@ -23,7 +23,7 @@
       <li><a href="#get_total_mem">get_total_mem</a></li>
       <li><a href="#is_saptune_installed">is_saptune_installed</a></li>
       <li><a href="#prepare_profile">prepare_profile</a></li>
-      <li><a href="#copy_media">copy_media</a></li>
+      <li><a href="#mount_media">mount_media</a></li>
       <li><a href="#add_hostname_to_hosts">add_hostname_to_hosts</a></li>
       <li><a href="#test_pids_max">test_pids_max</a></li>
       <li><a href="#test_forkbomb">test_forkbomb</a></li>
@@ -34,7 +34,9 @@
       <li><a href="#check_service_state">check_service_state</a></li>
       <li><a href="#check_instance_state">check_instance_state</a></li>
       <li><a href="#check_replication_state">check_replication_state</a></li>
+      <li><a href="#check_hanasr_attr">check_hanasr_attr</a></li>
       <li><a href="#reboot">reboot</a></li>
+      <li><a href="#do_hana_sr_register">do_hana_sr_register</a></li>
       <li><a href="#do_hana_takeover">do_hana_takeover</a></li>
       <li><a href="#install_libopenssl_legacy">install_libopenssl_legacy</a></li>
       <li><a href="#upload_hana_install_log">upload_hana_install_log</a></li>
@@ -103,15 +105,11 @@
 
 <p>Configures with <b>saptune</b> (if available in SUT) or <b>sapconf</b> the SUT according to a profile passed as argument. <b>$profile</b> must be either <b>HANA</b> or <b>NETWEAVER</b>. Croaks on failure.</p>
 
-<h2 id="copy_media">copy_media</h2>
+<h2 id="mount_media">mount_media</h2>
 
-<pre><code> $self-&gt;copy_media( $proto, $path, $timeout, $target );</code></pre>
+<pre><code> $self-&gt;mount_media( $proto, $path, $target );</code></pre>
 
-<p>Copies installation media in SUT from the share identified by <b>$proto</b> and <b>$path</b> into the target directory <b>$target</b>. <b>$timeout</b> specifies how long to wait for the copy to complete.</p>
-
-<p>After installation files are copied, this method will also verify the existence of a <i>checksum.md5sum</i> file in the target directory and use it to check for the integrity of the copied files. This test can be skipped by setting to a true value the <b>DISABLE_CHECKSUM</b> setting in the test.</p>
-
-<p>The method will croak if any of the commands sent to SUT fail.</p>
+<p>Mount installation media in SUT from the share identified by <b>$proto</b> and <b>$path</b> into the target directory <b>$target</b>.</p>
 
 <h2 id="add_hostname_to_hosts">add_hostname_to_hosts</h2>
 
@@ -177,11 +175,23 @@
 
 <p><b>systemReplicationStatus.py</b> return codes are: 10: No System Replication 11: Error 12: Unknown 13: Initializing 14: Syncing 15: Active</p>
 
+<h2 id="check_hanasr_attr">check_hanasr_attr</h2>
+
+<pre><code> $self-&gt;check_hanasr_attr();</code></pre>
+
+<p>Runs <b>SAPHanaSR-showAttr</b> and checks in its output for up to a timeout specified in the named argument <b>timeout</b> (defaults to 90 seconds) that the sync_state is <b>SOK</b>. It also checks that no <b>SFAIL</b> sync_status is present in the output. Finishes by printing the full output of <b>SAPHanaSR-showAttr</b>. This method will only fail if <b>SAPHanaSR-showAttr</b> returns a non-zero return value.</p>
+
 <h2 id="reboot">reboot</h2>
 
 <pre><code> $self-&gt;reboot();</code></pre>
 
 <p>Restart the SUT and reconnect to the console right after.</p>
+
+<h2 id="do_hana_sr_register">do_hana_sr_register</h2>
+
+<pre><code> $self-&gt;do_hana_sr_register( node =&gt; $node );</code></pre>
+
+<p>Register current HANA node to the node specified by the named argument <b>node</b>. With the named argument <b>proceed_on_failure</b> set to 1, method will use <b>script_run</b> and return the return value of the <b>script_run</b> call even if sr_register command fails, otherwise <b>assert_script_run</b> is used and the method croaks on failure.</p>
 
 <h2 id="do_hana_takeover">do_hana_takeover</h2>
 
