@@ -10,7 +10,7 @@
 use base 'y2_installbase';
 use strict;
 use warnings;
-use version_utils qw(is_storage_ng is_sle);
+use version_utils qw(is_storage_ng is_sle is_sle_micro);
 use partition_setup 'mount_device';
 use testapi;
 
@@ -60,6 +60,10 @@ sub run {
         # start with preconfigured partitions
         send_key 'down';
         send_key 'ret';
+    }
+    if (is_sle_micro) {
+        assert_screen 'expert_partitioner_warning-textmode';
+        send_key 'alt-o';
     }
     assert_screen 'expert-partitioner-setup';
     wait_still_screen 3;

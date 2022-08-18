@@ -13,7 +13,7 @@ use base 'y2_installbase';
 use strict;
 use warnings;
 use testapi;
-use version_utils qw(is_leap is_storage_ng is_sle is_tumbleweed);
+use version_utils qw(is_leap is_storage_ng is_sle is_tumbleweed is_sle_micro);
 use partition_setup qw(%partition_roles is_storage_ng_newui);
 
 sub run {
@@ -21,6 +21,16 @@ sub run {
         assert_screen 'Common-Criteria-Evaluated-Configuration-RN-Next';
         send_key 'alt-n';
     }
+    if (is_sle_micro) {
+        assert_screen 'sle-micro-install-overview-textmode';
+        send_key 'alt-c';
+        assert_screen 'inst-overview-options';
+        send_key 'alt-p';
+        $cmd{expertpartitioner} = 'alt-e';
+        $cmd{enablelvm} = 'alt-e';
+        $cmd{encryptdisk} = 'alt-a';
+    }
+
     assert_screen 'partitioning-edit-proposal-button', 40;
     if (check_var('PARTITION_EDIT', 'ext4_btrfs')) {
         send_key 'alt-g';
