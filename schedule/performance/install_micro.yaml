@@ -1,0 +1,22 @@
+name: install_micro
+description:    >
+    This is a test
+schedule:
+    - boot/boot_from_pxe
+    - installation/welcome
+    - installation/scc_registration 
+    - installation/ntp_config_settings
+    - installation/user_settings_root 
+    - installation/partitioning
+    - installation/partitioning_specific_disk
+    - installation/partitioning_finish
+    - installation/installer_timezone
+    - installation/user_settings
+    - installation/user_settings_root
+    - installation/resolve_dependency_issues
+    - installation/installation_overview
+    - installation/disable_grub_graphics
+    - installation/start_install
+    - installation/await_install
+    - installation/logs_from_installation_system
+    - installation/reboot_after_installation
