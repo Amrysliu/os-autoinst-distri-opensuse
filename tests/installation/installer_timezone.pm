@@ -16,6 +16,7 @@ use strict;
 use warnings;
 use testapi;
 use utils 'noupdatestep_is_applicable';
+use version_utils qw(is_sle_micro);
 
 sub run {
     assert_screen "inst-timezone", 125 || die 'no timezone';
@@ -29,6 +30,9 @@ sub run {
         send_key 'tab';
         send_key "end";
         send_key_until_needlematch("timezone-shanghai", "up", 100, 1);
+    }
+    if (is_sle_micro) {
+        send_key 'alt-a';
     }
     # Unpredictable hotkey on kde live distri, click button. See bsc#1045798
     if (noupdatestep_is_applicable() && get_var("LIVECD")) {

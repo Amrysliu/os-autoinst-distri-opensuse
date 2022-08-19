@@ -21,6 +21,7 @@ use Utils::Backends qw(is_remote_backend is_hyperv);
 use Test::Assert ':all';
 
 sub ensure_ssh_unblocked {
+    return if (is_sle_micro);
     if (!get_var('UPGRADE') && is_remote_backend) {
 
         send_key_until_needlematch [qw(ssh-blocked ssh-open)], 'tab', 25;
@@ -94,7 +95,7 @@ sub run {
     }
     else {
         # Refer to: https://progress.opensuse.org/issues/47369
-        assert_screen "installation-settings-overview-loaded", 420;
+        assert_screen([qw(installation-settings-overview-loaded sle-micro-install-overview-textmode)], 420);
         if (get_var('XEN')) {
             if (!check_screen('inst-xen-pattern')) {
                 assert_and_click 'installation-settings-overview-loaded-scrollbar-up';

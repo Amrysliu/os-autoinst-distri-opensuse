@@ -54,30 +54,8 @@ sub format_partition {
     send_key 'ret';
 }
 
-sub run {
-    send_key $cmd{expertpartitioner};
-    if (is_storage_ng) {
-        # start with preconfigured partitions
-        send_key 'down';
-        send_key 'ret';
-    }
-    if (is_sle_micro) {
-        assert_screen 'expert_partitioner_warning-textmode';
-        send_key 'alt-o';
-    }
-    assert_screen 'expert-partitioner-setup';
-    wait_still_screen 3;
-
-
-    # Select device
-    # set swap for vt
-    if (get_var("MITIGATION_INSTALL")) {
-        select_partition "expert-partitioner-swap";
-        send_key 'alt-e';
-        send_key 'alt-a';
-        send_key $cmd{next};
-    }
-    my $disk = get_required_var('SPECIFIC_DISK');
+sub set_specific_disk {
+    my ($disk, $mount_device) = @_;
     select_partition "expert-partitioner-$disk";
 
     # Edit device
@@ -94,10 +72,43 @@ sub run {
     format_partition;
 
     # Set mount point and volume label
-    mount_device '/';
+    mount_device $mount_device;
 
     # Expert partition finish
     send_key(is_storage_ng() ? 'alt-n' : 'alt-f');
+}
+
+sub run {
+    send_key $cmd{expertpartitioner};
+    if (is_storage_ng) {
+        # start with preconfigured partitions
+        send_key 'down';
+        send_key 'ret';
+    }
+    if (is_sle_micro) {
+        assert_screen 'expert_partitioner_warning-textmode';
+        send_key 'alt-o';
+    }
+    assert_screen 'expert-partitioner-setup';
+    wait_still_screen 3;
+
+    # Select device
+    # set swap for vt
+    if (get_var("MITIGATION_INSTALL")) {
+        select_partition "expert-partitioner-swap";
+        send_key 'alt-e';
+        send_key 'alt-a';
+        send_key $cmd{next};
+    }
+
+    if (is_sle_micro) {
+        my $var_disk = get_required_var('SPECIFIC_VAR_DISK');
+        set_specific_disk($var_disk, '/var');
+    }
+
+    my $disk = get_required_var('SPECIFIC_DISK');
+    set_specific_disk($disk, '/');
+
     send_key 'alt-p';
     if (check_screen("expert-partitioner-Warning_popup", 5)) {
         send_key 'alt-y';

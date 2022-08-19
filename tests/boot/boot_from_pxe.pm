@@ -71,6 +71,7 @@ sub run {
         my $openqa_url = get_required_var('OPENQA_URL');
         $openqa_url = 'http://' . $openqa_url unless $openqa_url =~ /http:\/\//;
         my $repo = $openqa_url . "/assets/repo/${image_name}";
+
         my $key_used = '';
         if (is_remote_backend && is_aarch64 && is_supported_suse_domain) {
             $key_used = 'c';
@@ -84,7 +85,7 @@ sub run {
         if (match_has_tag("qa-net-boot")) {
             #Nuremberg
             my $path_prefix = "/mnt/openqa/repo";
-            my $path = "${path_prefix}/${image_name}/boot/${arch}/loader";
+            my $path = "${path_prefix}/${image_name}/${arch}/DVD1/boot/${arch}/loader";
             $image_path = "$path/linux initrd=$path/initrd install=$repo";
         }
         elsif (match_has_tag("orthos-grub-boot") or match_has_tag("qa-net-grub-boot")) {
@@ -179,6 +180,7 @@ sub run {
 
         # Proceed if the 'installation' console is ready
         # otherwise the 'sol' console may be just freezed
+        send_key 'ret' if (check_screen('qa-net-grub-boot-download-warning'));
         my $stilltime = check_var('SLE_PRODUCT', 'sles4sap') ? 30 : 180;
         wait_still_screen(stilltime => $stilltime, timeout => 185);
         if (check_screen(\@tags, $ssh_vnc_wait_time)) {
