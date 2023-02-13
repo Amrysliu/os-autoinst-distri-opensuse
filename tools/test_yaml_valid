@@ -8,6 +8,11 @@ use JSON::Validator;
 use File::Basename;
 use YAML::PP::Schema::Include;
 
+# Add a switch to hide the passed yaml valid check logs
+# You can set $hide_pass to 0 if you sitll need print
+# the passed logs
+my $hide_pass = 0;
+
 my $schema_file = "$Bin/../t/schema/Schedule-1.yaml";
 my $validator = JSON::Validator->new;
 $validator = eval { $validator->load_and_validate_schema($schema_file) };
@@ -31,7 +36,9 @@ for my $file (@ARGV) {
         diag "Error: $err";
     }
     else {
-        pass("$file has valid yaml syntax");
+        unless ($hide_pass) {
+            pass("$file has valid yaml syntax");
+        }
     }
     # Only include yamls related with schedule
     # No need for cheking schema of yaml files under flows/
@@ -43,7 +50,9 @@ for my $file (@ARGV) {
             diag "Error: @errors";
         }
         else {
-            pass("$file has valid schema");
+            unless ($hide_pass) {
+                pass("$file has valid schema");
+            }
         }
     }
 }
