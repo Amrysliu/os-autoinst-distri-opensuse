@@ -72,6 +72,7 @@ sub setup_environment {
 sub os_update {
     my $update_repo_url = shift;
     my $zypper_repo_path = "/etc/zypp/repos.d";
+    script_run("ip a");
 
     assert_script_run("wget -N -P $zypper_repo_path $update_repo_url 2>&1");
     zypper_call("--gpg-auto-import-keys ref");
