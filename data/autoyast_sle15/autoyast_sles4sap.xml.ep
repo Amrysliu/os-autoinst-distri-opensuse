@@ -15,6 +15,11 @@
     </signature-handling>
     <self_update config:type="boolean">false</self_update>
   </general>
+  <bootloader>
+      <global>
+          <timeout config:type="integer">30</timeout>
+      </global>
+  </bootloader>
   <networking>
     <dhcp_options>
       <dhclient_hostname_option>AUTO</dhclient_hostname_option>
