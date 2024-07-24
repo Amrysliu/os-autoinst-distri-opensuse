@@ -28,12 +28,17 @@ sub run {
     # Clean up and re-register not to affect other job which are sharing same qcow2
     if (is_sle('15+')) {
         cleanup_registration();
-        assert_script_run('SUSEConnect -r ' . get_required_var('SCC_REGCODE'), 200);
+        assert_script_run('SUSEConnect -r ' . get_required_var('SCC_REGCODE') . ' --debug', 200);
     }
+
+    record_info("SUSEConnect --status-text:", script_output('SUSEConnect --status-text'));
+    record_info("zypper se release:", script_output('zypper se release'));
 
     # Check the build number, can useful for debugging!
     my $build_version = script_output('cat /etc/YaST2/build', proceed_on_failure => 1);
     record_info("Build version", "Build version installed: $build_version");
+    
+    script_run("ls /etc/products.d/");
 
     # Install migration tool
     zypper_call 'in -y migrate-sles-to-sles4sap';
