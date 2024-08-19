@@ -1020,13 +1020,15 @@ kernel.
 sub is_not_maintenance_update {
     my $package = shift;
     # Allow to skip an openQA module if package is not targeted by maintenance update
-    if (get_var('MAINTENANCE') && get_var('INCIDENT_ID')) {
+    if (get_var('MAINTENANCE')) {
         # If package is listed in BUILD, no need to check for more
         return 0 if (get_var('BUILD') =~ /$package|kernel/);
         # Package name is not in BUILD setting, but it can still be targeted by the
         # incident, so let's query SMELT to confirm
-        my @incident_packages = get_incident_packages(get_required_var('INCIDENT_ID'));
-        return 0 if (grep(/$package|kernel/, @incident_packages));
+	if (get_var('INCIDENT_ID')) {
+        	my @incident_packages = get_incident_packages(get_required_var('INCIDENT_ID'));
+        	return 0 if (grep(/$package|kernel/, @incident_packages));
+	}
         record_info('Skipped - MU', "$package test not needed here");
         return 1;
     }
