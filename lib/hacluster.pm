@@ -796,6 +796,10 @@ sub wait_until_resources_started {
                 sleep 5;
             }
             else {
+	        # record cluster status
+                record_info('Cluster status', script_output("$crm_mon_cmd"));
+                script_output("lsmod | grep drdb");
+                script_output("insmod drdb");
                 die "Cluster/resources did not start within $timeout seconds (cmd='$cmd')";
             }
         }
