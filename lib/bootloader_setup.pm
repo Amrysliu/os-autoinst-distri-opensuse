@@ -888,7 +888,7 @@ sub specific_bootmenu_params {
     if (my $agama_auto = get_var('AGAMA_AUTO')) {
         my $url = autoyast::expand_agama_profile($agama_auto);
         $url = shorten_url($url) if (is_backend_s390x && !is_opensuse);
-        push @params, "inst.auto=$url inst.finish=stop";
+        push @params, "agama.auto=$url inst.finish=stop";
     }
 
     if (my $agama_install_url = get_var('AGAMA_INSTALL_URL')) {
