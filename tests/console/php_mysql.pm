@@ -40,6 +40,8 @@ sub run {
 
     systemctl 'restart mysql', timeout => 300;
 
+    assert_script_run("setsebool -P httpd_can_network_connect_db 1");
+
     test_mysql;
 }
 1;
