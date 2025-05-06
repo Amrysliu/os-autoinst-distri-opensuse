@@ -123,6 +123,8 @@ schedule:
     - console/rsync
     - console/rust
     - console/sudo
+    - x11/evolution/evolution_prepare_servers
+    - console/mutt
     - '{{sle_tests}}'
     - console/quota
     - console/rpcbind
