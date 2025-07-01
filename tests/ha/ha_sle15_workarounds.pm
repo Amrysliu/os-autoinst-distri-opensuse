@@ -31,13 +31,13 @@ sub run {
         #return;
         zypper_call 'ar --no-gpgcheck http://download.suse.de/ibs/home:/jsegitz:/branches:/SUSE:/SLFO:/Main_bsc1244495/standard/home:jsegitz:branches:SUSE:SLFO:Main_bsc1244495.repo';
         zypper_call 'refresh';
-        enter_cmd 'zypper in --oldpackage selinux-policy-targeted-20241031+git.6fc926ed8-160000.3.1.noarch';
-        sleep 10;
-        enter_cmd '1';
+        enter_cmd 'zypper in --oldpackage selinux-policy-targeted-20241031+git.6fc926ed8-160000.3.2.noarch';
+	sleep 10;
+	enter_cmd '1';
 	sleep 10;
 	enter_cmd 'y';
 	sleep 10;
-        zypper_call 'refresh';
+	zypper_call 'refresh';
         #        assert_script_run q|sed -i -e '/^GRUB_CMDLINE_LINUX_DEFAULT/s/security=selinux//' -e '/^GRUB_CMDLINE_LINUX_DEFAULT/s/selinux=[01]//' -e '/^GRUB_CMDLINE_LINUX_DEFAULT/s/enforcing=[01]//' /etc/default/grub|;
         #        add_grub_cmdline_settings('security=apparmor', update_grub => 0);
         #        add_grub_cmdline_settings('selinux=0', update_grub => 1);
