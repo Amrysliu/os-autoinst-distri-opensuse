@@ -147,7 +147,7 @@ sub run {
 
     # Create the HA resource
     if (is_node(1)) {
-        assert_script_run "EDITOR=\"sed -ie '\$ a primitive $drbd_rsc ocf:linbit:drbd params drbd_resource=$drbd_rsc'\" crm configure edit";
+        assert_script_run "EDITOR=\"sed -ie '\$ a primitive $drbd_rsc ocf:linbit:drbd params drbd_resource=$drbd_rsc ignore_missing_notifications=true'\" crm configure edit";
 
         if (is_sle('>=15-SP4')) {
             assert_script_run
@@ -164,7 +164,7 @@ sub run {
         save_state;
 
         # Check for result
-        ensure_resource_running("ms_$drbd_rsc", ":[[:blank:]]*$node_01\[[:blank:]]*[Mm]aster\$");
+        ensure_resource_running("ms_$drbd_rsc", ":[[:blank:]]*$node_01\[[:blank:]]*([Mm]aster|[Pp]romoted)\$");
 
         # Check device
         check_device_available("/dev/$drbd_rsc");
@@ -186,7 +186,7 @@ sub run {
         }
 
         # Node01 should be the Master
-        ensure_resource_running("ms_$drbd_rsc", ":[[:blank:]]*$node_01\[[:blank:]]*[Mm]aster\$");
+        ensure_resource_running("ms_$drbd_rsc", ":[[:blank:]]*$node_01\[[:blank:]]*([Mm]aster|[Pp]romoted)\$");
 
         # Check device
         check_device_available("/dev/$drbd_rsc");
@@ -215,7 +215,7 @@ sub run {
         assert_script_run "while ! \$(drbdadm status $drbd_rsc | grep -q \"$drbd_rsc role:Primary\"); do sleep 10; drbdadm status $drbd_rsc; done", 240;
 
         # Check for result
-        ensure_resource_running("ms_$drbd_rsc", ":[[:blank:]]*$node_02\[[:blank:]]*[Mm]aster\$");
+        ensure_resource_running("ms_$drbd_rsc", ":[[:blank:]]*$node_02\[[:blank:]]*([Mm]aster|[Pp]romoted)\$");
 
         # Check device
         check_device_available("/dev/$drbd_rsc");
@@ -241,7 +241,7 @@ sub run {
         assert_script_run "while ! \$(drbdadm status $drbd_rsc | grep -q \"$drbd_rsc role:Primary\"); do sleep 10; drbdadm status $drbd_rsc; done", 240;
 
         # Check for result
-        ensure_resource_running("ms_$drbd_rsc", ":[[:blank:]]*$node_01\[[:blank:]]*[Mm]aster\$");
+        ensure_resource_running("ms_$drbd_rsc", ":[[:blank:]]*$node_01\[[:blank:]]*([Mm]aster|[Pp]romoted)\$");
 
         # Check device
         check_device_available("/dev/$drbd_rsc");
