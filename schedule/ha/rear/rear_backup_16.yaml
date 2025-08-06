@@ -19,3 +19,14 @@ schedule:
   - console/consoletest_setup
   - ha/rear_backup
   - console/scc_deregistration
+conditional_schedule:
+  agama_auto:
+    ARCH:
+      x86_64:
+        - yam/agama/boot_agama
+        - yam/agama/agama_auto
+        - boot/boot_to_desktop
+      ppc64le:
+        - installation/bootloader
+        - installation/agama_reboot
+        - installation/grub_test
