@@ -12,6 +12,7 @@ use strict;
 use warnings;
 use version_utils 'is_sle';
 use testapi;
+use power_action_utils 'power_action';
 use hacluster;
 
 # Do some stuff that need to be workaround in SLE15
@@ -21,6 +22,15 @@ sub run {
     # Modify the device number if needed
     if ((get_var('ISO', '') eq '') && (get_var('ISO_1', '') ne '')) {
         assert_script_run "sed -i 's;sr1;sr0;g' /etc/zypp/repos.d/*";
+    }
+
+    # After changing hostname, we need to restart systemd-udevd.service to get correct hostname
+    # See https://bugzilla.suse.com/show_bug.cgi?id=1247534
+    #    assert_script_run('systemctl restart systemd-udevd.service') if (is_sle('16+') && get_var('HA_CLUSTER_DRBD'));
+    if (is_sle('16+') && get_var('HA_CLUSTER_DRBD')) {
+        power_action('reboot', textmode => 1);
+	opensusebasetest::wait_boot(opensusebasetest->new(), bootloader_time => 200);
+	select_console 'root-console';
     }
 }
 
