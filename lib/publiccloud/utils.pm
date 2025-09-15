@@ -306,6 +306,14 @@ sub get_credentials {
     my $url_auth = Mojo::URL->new($url)->userinfo("$user:$pwd");
     my $ua = Mojo::UserAgent->new;
     $ua->insecure(1);
+
+    $ua->ioloop->connector(
+        sub {
+	    my ($loop, $args, $cb) = @_;
+	    $args->{family} = 'inet';
+	    return $loop->client($args, $cb);
+	}
+    );
     my $tx = $ua->get($url_auth);
     my $res = $tx->result;
     die("Fetching CSP credentials failed: " . $res->message) unless ($res->is_success);
