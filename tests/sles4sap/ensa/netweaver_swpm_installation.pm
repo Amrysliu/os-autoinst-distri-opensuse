@@ -49,7 +49,7 @@ sub run {
     my $sar_archives_dir = $media_mount_point . '/' . get_var('SAR_SOURCES', 'SAR_SOURCES'); # relative path from NFS root to the DIR with KERNEL, SWPM... SAR archives
     my $sapcar_bin = $media_mount_point . '/' . get_var('SAPCAR_BIN', 'SAPCAR');    # relative path from NFS root to SAPCAR binary
     my $swpm_sar_filename = get_required_var('SWPM_SAR_FILENAME');
-    my $sapinst_unpack_path = '/usr/sap/SWPM';
+    my $sapinst_unpack_path = '/usr/sap/SWPM10SP45_0';
     my $sap_install_profile = "$sapinst_unpack_path/inifile.params";
 
     my $product_id = $instance_data->{product_id};
