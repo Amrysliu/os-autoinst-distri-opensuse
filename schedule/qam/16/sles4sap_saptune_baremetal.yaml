@@ -1,0 +1,14 @@
+---
+name: sles4sap_saptune_baremetal
+description: >
+  saptune tests for SLES4SAP staging on baremetal
+vars:
+  MR_TEST: '%ARCH%'
+schedule:
+  #  - installation/ipxe_install
+  - installation/bootloader_start
+  - installation/agama_reboot
+  - support_server/login
+  - console/zypper_lr
+  - console/system_prepare
+  - sles4sap/saptune/mr_test
