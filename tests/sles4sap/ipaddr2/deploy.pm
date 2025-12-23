@@ -123,7 +123,7 @@ sub run {
     my %deployment = (
         os => $os,
         diagnostic => get_var('IPADDR2_DIAGNOSTIC', 0));
-    $deployment{trusted_launch} = 0 if (check_var('IPADDR2_TRUSTEDLAUNCH', 0));
+    $deployment{trusted_launch} = get_var('IPADDR2_TRUSTEDLAUNCH');
 
     $deployment{region} = $provider->provider_client->region;
     # If required (by default cloud-init is active), both:

@@ -350,8 +350,8 @@ sub ipaddr2_infra_deploy(%args) {
         snet => $subnet,
         ssh_pubkey => get_ssh_private_key_path() . '.pub',
         public_ip => "");
-    if (!$args{trusted_launch}) {
-        $vm_create_generic_args{security_type} = 'Standard';
+    if ($args{trusted_launch}) {
+        $vm_create_generic_args{security_type} = 'TrustedLaunch';
     }
 
     my %vm_create_internal_args = %vm_create_generic_args;
