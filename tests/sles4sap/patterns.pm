@@ -86,8 +86,8 @@ sub run {
             zypper_call("in -y -t pattern $pattern", timeout => 1500);
             $output = script_output "zypper info -t pattern $pattern";
             # Name of HA pattern is weird...
-            $pattern = "ha-$pattern" if ($pattern =~ /ha_sles/) && get_var('HA_CLUSTER');
             my $orgin_pattern = $pattern;
+            $pattern = "ha-$pattern" if ($pattern =~ /ha_sles/) && get_var('HA_CLUSTER');
             $pattern =~ s/^sles_sap_/sap-/ if (is_sle('16+'));
             die "SAP zypper pattern [$pattern] info check failed"
               unless ($output =~ /i.?\s+\|\s(patterns-$pattern|pattern:($orgin_pattern|$pattern))\s+\|\s(package|pattern)\s\|\sRequired/);
